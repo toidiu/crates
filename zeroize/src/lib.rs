@@ -257,28 +257,14 @@ impl_zeroize_with_default!(i8, i16, i32, i64, i128, isize);
 impl_zeroize_with_default!(u8, u16, u32, u64, u128, usize);
 impl_zeroize_with_default!(f32, f64, char, bool);
 
-/// Implement `Zeroize` on arrays of types that impl `Zeroize`
-macro_rules! impl_zeroize_for_array {
-    ($($size:expr),+) => {
-        $(
-            impl<Z> Zeroize for [Z; $size]
-            where
-                Z: Zeroize
-            {
-                fn zeroize(&mut self) {
-                    self.iter_mut().zeroize();
-                }
-            }
-        )+
-     };
+impl<Z, const N: usize> Zeroize for [Z; N]
+where
+    Z: Zeroize
+{
+    fn zeroize(&mut self) {
+        self.iter_mut().zeroize();
+    }
 }
-
-// TODO(tarcieri): const generics
-impl_zeroize_for_array!(
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-    27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
-    51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
-);
 
 impl<'a, Z> Zeroize for IterMut<'a, Z>
 where
